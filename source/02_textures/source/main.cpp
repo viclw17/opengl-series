@@ -34,7 +34,7 @@
 #include "tdogl/Texture.h"
 
 // constants
-const glm::vec2 SCREEN_SIZE(800, 600);
+const glm::vec2 SCREEN_SIZE(600, 600);
 
 // globals
 GLFWwindow* gWindow = NULL;
@@ -66,9 +66,9 @@ static void LoadTriangle() {
     // Put the three triangle vertices (XYZ) and texture coordinates (UV) into the VBO
     GLfloat vertexData[] = {
         //  X     Y     Z       U     V
-         0.0f, 0.8f, 0.0f,   0.5f, 1.0f,
-        -0.8f,-0.8f, 0.0f,   0.0f, 0.0f,
-         0.8f,-0.8f, 0.0f,   1.0f, 0.0f,
+         0.000f, 0.5f, 0.0f,   0.5f, 1.0f,
+        -0.577f,-0.5f, 0.0f,   0.0f, 0.0f,
+         0.577f,-0.5f, 0.0f,   1.0f, 0.0f,
     };
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 

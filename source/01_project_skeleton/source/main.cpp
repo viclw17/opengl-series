@@ -33,20 +33,23 @@
 #include "Program.h"
 
 // constants
-const glm::vec2 SCREEN_SIZE(800, 600);
+const glm::vec2 SCREEN_SIZE(600, 600);
 
 // globals
 GLFWwindow* gWindow = NULL;
-tdogl::Program* gProgram = NULL;
 GLuint gVAO = 0;
 GLuint gVBO = 0;
+
+tdogl::Program* gProgram = NULL;
 
 
 // loads the vertex shader and fragment shader, and links them to make the global gProgram
 static void LoadShaders() {
     std::vector<tdogl::Shader> shaders;
-    shaders.push_back(tdogl::Shader::shaderFromFile(ResourcePath("vertex-shader.txt"), GL_VERTEX_SHADER));
-    shaders.push_back(tdogl::Shader::shaderFromFile(ResourcePath("fragment-shader.txt"), GL_FRAGMENT_SHADER));
+    shaders.push_back(tdogl::Shader::shaderFromFile(ResourcePath("vertex-shader.txt"),
+                                                    GL_VERTEX_SHADER));
+    shaders.push_back(tdogl::Shader::shaderFromFile(ResourcePath("fragment-shader.txt"),
+                                                    GL_FRAGMENT_SHADER));
     gProgram = new tdogl::Program(shaders);
 }
 
@@ -64,9 +67,9 @@ static void LoadTriangle() {
     // Put the three triangle verticies into the VBO
     GLfloat vertexData[] = {
         //  X     Y     Z
-         0.0f, 0.8f, 0.0f,
-        -0.8f,-0.8f, 0.0f,
-         0.8f,-0.8f, 0.0f,
+         0.000f, 0.5f, 0.0f,
+        -0.577f,-0.5f, 0.0f,
+         0.577f,-0.5f, 0.0f,
     };
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
     
@@ -86,20 +89,22 @@ static void Render() {
     glClearColor(0, 0, 0, 1); // black
     glClear(GL_COLOR_BUFFER_BIT);
     
+    
     // bind the program (the shaders)
     glUseProgram(gProgram->object());
-        
+    
+    
     // bind the VAO (the triangle)
     glBindVertexArray(gVAO);
-    
     // draw the VAO
     glDrawArrays(GL_TRIANGLES, 0, 3);
     
+    
     // unbind the VAO
     glBindVertexArray(0);
-    
     // unbind the program
     glUseProgram(0);
+    
     
     // swap the display buffers (displays what was just drawn)
     glfwSwapBuffers(gWindow);
@@ -109,8 +114,15 @@ void OnError(int errorCode, const char* msg) {
     throw std::runtime_error(msg);
 }
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, 1);
+}
+
 // the program starts here
 void AppMain() {
+    
     // initialise GLFW
     glfwSetErrorCallback(OnError);
     if(!glfwInit())
@@ -122,11 +134,20 @@ void AppMain() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    gWindow = glfwCreateWindow((int)SCREEN_SIZE.x, (int)SCREEN_SIZE.y, "OpenGL Tutorial", NULL, NULL);
+    
+    gWindow = glfwCreateWindow((int)SCREEN_SIZE.x,
+                               (int)SCREEN_SIZE.y,
+                               "OpenGL Tutorial",
+                               NULL, NULL);
     if(!gWindow)
         throw std::runtime_error("glfwCreateWindow failed. Can your hardware handle OpenGL 3.2?");
 
+    // Victor
+    // Receiving input events
+    glfwSetKeyCallback(gWindow, key_callback);
+    
     // GLFW settings
+    // Before you can use the OpenGL API, you must have a current OpenGL context.
     glfwMakeContextCurrent(gWindow);
     
     // initialise GLEW
@@ -146,18 +167,20 @@ void AppMain() {
 
     // load vertex and fragment shaders into opengl
     LoadShaders();
-
     // create buffer and fill it with the points of the triangle
     LoadTriangle();
 
     // run while the window is open
     while(!glfwWindowShouldClose(gWindow)){
+        
         // process pending events
         glfwPollEvents();
         
         // draw one frame
         Render();
     }
+    
+    
 
     // clean up and exit
     glfwTerminate();
